@@ -1,0 +1,77 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.9.8
+
+      - name: Terraform Init
+        run: |
+          cd terraform
+          terraform init
+
+      - name: Terraform Apply
+        id: apply
+        run: |
+          cd terraform
+          terraform apply -auto-approve
+          
+      - name: Get Instance IP
+        id: get_instance_ip
+        run: |
+          INSTANCE_IP=$(terraform output -raw instance_ip)
+          echo "INSTANCE_IP=${INSTANCE_IP}" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker Images
+        run: |
+          docker build -t kevinrooso/mybooksapi ./api
+          docker build -t kevinrooso/mybooksapp ./book-frontend
+
+      - name: Push Docker Images
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker push kevinrooso/mybooksapi
+          docker push kevinrooso/mybooksapp
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH for Deployment
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Update hosts.ini with Dynamic IP
+        run: |
+          echo "[webserver]" > ansible/hosts.ini
+          echo "${{ env.INSTANCE_IP }} ansible_ssh_user=ec2-user" >> ansible/hosts.ini
+
+      - name: Copy Ansible Playbook and Inventory
+        run: |
+          scp -o StrictHostKeyChecking=no ansible/playbook.yml ec2-user@${{ env.INSTANCE_IP }}:/home/ec2-user/playbook.yml
+          scp -o StrictHostKeyChecking=no ansible/hosts.ini ec2-user@${{ env.INSTANCE_IP }}:/home/ec2-user/hosts.ini
+
+      - name: Run Ansible Playbook
+        run: |
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ env.INSTANCE_IP }} "ansible-playbook -i /home/ec2-user/hosts.ini /home/ec2-user/playbook.yml"

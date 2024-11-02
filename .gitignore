@@ -1,0 +1,12 @@
+# Ignore node_modules directory
+node_modules/
+
+# Pem file ignored
+*.pem
+
+# Terraform files
+*.tfstate
+*.tfstate.backup
+.terraform/
+*.tfvars
+.terraform.lock.hcl

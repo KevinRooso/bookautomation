@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  api:
+    # Build refers to file location
+    build: ./api
+    # Container name for the specific container of this app
+    container_name: booksapi_c       
+    # Node app listens on 4000 port
+    ports:
+      - '4000:4000'
+  bookapp:
+    # Build refers to file location
+    build: ./book-frontend
+    # Container name for the specific container of this app
+    container_name: bookapp_c    
+    # Since vite was used 5173 port will run in container
+    ports:
+      - '5173:5173'
+    # Stdin open makes the standard user input open which is good for development commands like in
+    # React we might want to run npm commands 
+    stdin_open: true
+    # TTy refers to providing terminal interface for container where we can use the commands mentioned 
+    # above    
+    tty: true  

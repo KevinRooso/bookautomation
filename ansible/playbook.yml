@@ -1,0 +1,32 @@
+---
+# declarative syntax
+- name: Setup Docker and Docker Compose on EC2
+  hosts: webserver # points to the hosts.ini
+  become: yes
+  tasks:
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Install Docker Compose
+      shell: >
+        curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" 
+        -o /usr/local/bin/docker-compose && 
+        chmod +x /usr/local/bin/docker-compose
+
+    - name: Copy docker-compose.yaml to the server
+      copy:
+        src: ../docker-compose.yaml  # Path on local
+        dest: /home/ec2-user/docker-compose.yaml   # Destination path on the server
+
+    - name: Run Docker Compose
+      command: docker-compose up -d
+      args:
+        chdir: /home/ec2-user  # Change to the directory where docker-compose.yaml is located

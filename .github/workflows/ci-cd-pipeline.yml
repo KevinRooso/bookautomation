@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     env:
-      PUBLIC_IP: "34.246.183.201"  # Public IP
+      PUBLIC_IP: "34.244.199.134"  # Public IP
     
     steps:
       - name: Checkout Code
@@ -95,3 +95,4 @@ jobs:
       - name: Run Ansible Playbook
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ env.PUBLIC_IP }} "ansible-playbook -i /home/ec2-user/hosts.ini /home/ec2-user/playbook.yml"
+          

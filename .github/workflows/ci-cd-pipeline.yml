@@ -16,40 +16,12 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 1.9.8
-
-      - name: Download Terraform State
-        uses: actions/download-artifact@v3
-        with:
-          name: terraform-state
-          path: terraform/  # Path where to save the artifact
+          terraform_version: 1.9.8      
 
       - name: Terraform Init
         run: |
           cd terraform
-          terraform init
-
-      - name: Check if Security Group Exists
-        id: check_sg
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          cd terraform
-          if aws ec2 describe-security-groups --group-names "allow_app_ports"; then
-            echo "Security group exists."
-            echo "security_group_exists=true" >> $GITHUB_ENV
-          else
-            echo "Security group does not exist."
-            echo "security_group_exists=false" >> $GITHUB_ENV
-          fi
-  
-      - name: Import Security Group if Exists
-        if: env.security_group_exists == 'true'
-        run: |
-          cd terraform
-          aws_security_group_id=$(aws ec2 describe-security-groups --group-names "allow_app_ports" --query "SecurityGroups[0].GroupId" --output text)
-          terraform import aws_security_group.allow_app_ports $aws_security_group_id
+          terraform init      
     
       - name: Terraform Plan
         id: plan
@@ -75,12 +47,6 @@ jobs:
           INSTANCE_IP=$(terraform output -raw instance_ip | tr -d '\n')
           echo "Debug: The instance IP is: ${INSTANCE_IP}"
           echo "INSTANCE_IP=${INSTANCE_IP}" >> $GITHUB_ENV
-
-      - name: Save Terraform State
-        uses: actions/upload-artifact@v3
-        with:
-          name: terraform-state
-          path: terraform/terraform.tfstate  # Path to your state file
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1

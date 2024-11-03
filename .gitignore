@@ -5,7 +5,7 @@ node_modules/
 *.pem
 
 # Terraform files
-*.tfstate
+# *.tfstate
 *.tfstate.backup
 .terraform/
 *.tfvars

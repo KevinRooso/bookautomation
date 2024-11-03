@@ -50,3 +50,9 @@ resource "aws_instance" "dockerappserver" {
     key_name = "My key" # key pair for aws connection
     security_groups = [aws_security_group.allow_app_ports.name] # Controls inbound outbound traffic
 }
+
+# Add the output block
+output "instance_ip" {
+    value = aws_instance.dockerappserver.public_ip
+    description = "The public IP address of the Docker app server"
+}

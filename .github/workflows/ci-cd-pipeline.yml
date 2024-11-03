@@ -18,6 +18,12 @@ jobs:
         with:
           terraform_version: 1.9.8
 
+      - name: Download Terraform State
+        uses: actions/download-artifact@v3
+        with:
+          name: terraform-state
+          path: terraform/  # Path where to save the artifact
+
       - name: Terraform Init
         run: |
           cd terraform
@@ -69,6 +75,12 @@ jobs:
           INSTANCE_IP=$(terraform output -raw instance_ip | tr -d '\n')
           echo "Debug: The instance IP is: ${INSTANCE_IP}"
           echo "INSTANCE_IP=${INSTANCE_IP}" >> $GITHUB_ENV
+
+      - name: Save Terraform State
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-state
+          path: terraform/terraform.tfstate  # Path to your state file
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1

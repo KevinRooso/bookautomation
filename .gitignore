@@ -10,3 +10,4 @@ node_modules/
 .terraform/
 *.tfvars
 .terraform.lock.hcl
+tfplan

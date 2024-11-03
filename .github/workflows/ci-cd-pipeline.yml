@@ -22,6 +22,28 @@ jobs:
         run: |
           cd terraform
           terraform init
+
+      - name: Check if Security Group Exists
+        id: check_sg
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          cd terraform
+          if aws ec2 describe-security-groups --group-names "allow_app_ports"; then
+            echo "Security group exists."
+            echo "security_group_exists=true" >> $GITHUB_ENV
+          else
+            echo "Security group does not exist."
+            echo "security_group_exists=false" >> $GITHUB_ENV
+          fi
+  
+      - name: Import Security Group if Exists
+        if: env.security_group_exists == 'true'
+        run: |
+          cd terraform
+          aws_security_group_id=$(aws ec2 describe-security-groups --group-names "allow_app_ports" --query "SecurityGroups[0].GroupId" --output text)
+          terraform import aws_security_group.allow_app_ports $aws_security_group_id
     
       - name: Terraform Plan
         id: plan

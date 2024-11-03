@@ -11,9 +11,16 @@ provider "aws"{
     region = "eu-west-1"  # Ireland Instance
 }
 
-resource "aws_security_group" "allow_nodereact_ports" {
-  name = "allow_nodereact_ports"
-  description = "Allows Node and React Ports"
+resource "aws_security_group" "allow_app_ports" {
+  name = "allow_app_ports"
+  description = "Allows Node ,React and SSH Ports"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Allow SSH traffic
+  }
 
    ingress {
     from_port   = 4000
@@ -41,5 +48,5 @@ resource "aws_instance" "dockerappserver" {
     ami = "ami-00385a401487aefa4" # Amazon Linux AMI from AWS
     instance_type = "t2.micro" # Free tier instance type
     key_name = "My key" # key pair for aws connection
-    security_groups = [aws_security_group.allow_nodereact_ports.name] # Controls inbound outbound traffic
+    security_groups = [aws_security_group.allow_app_ports.name] # Controls inbound outbound traffic
 }

@@ -80,7 +80,7 @@ jobs:
     
       - name: Install Ansible
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@{{ env.PUBLIC_IP }} "sudo yum install ansible -y"
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ env.PUBLIC_IP }} "sudo yum install ansible -y"
   
     #   - name: Update hosts.ini with Dynamic IP
     #     run: |
@@ -89,9 +89,9 @@ jobs:
 
       - name: Copy Ansible Playbook and Inventory
         run: |
-          scp -o StrictHostKeyChecking=no ansible/playbook.yml ec2-user@{{ env.PUBLIC_IP }}:/home/ec2-user/playbook.yml
-          scp -o StrictHostKeyChecking=no ansible/hosts.ini ec2-user@{{ env.PUBLIC_IP }}:/home/ec2-user/hosts.ini
+          scp -o StrictHostKeyChecking=no ansible/playbook.yml ec2-user@${{ env.PUBLIC_IP }}:/home/ec2-user/playbook.yml
+          scp -o StrictHostKeyChecking=no ansible/hosts.ini ec2-user@${{ env.PUBLIC_IP }}:/home/ec2-user/hosts.ini
 
       - name: Run Ansible Playbook
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@{{ env.PUBLIC_IP }} "ansible-playbook -i /home/ec2-user/hosts.ini /home/ec2-user/playbook.yml"
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ env.PUBLIC_IP }} "ansible-playbook -i /home/ec2-user/hosts.ini /home/ec2-user/playbook.yml"

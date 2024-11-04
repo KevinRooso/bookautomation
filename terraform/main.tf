@@ -1,3 +1,4 @@
+# Imports all the files and dependencies required to connect to awsS
 terraform {
   required_providers {
     aws = {

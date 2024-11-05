@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Created React app using vite which runs on 5173 port
-EXPOSE 5173
+EXPOSE 80
 
 # When container is started from image it will run this command , 
 # seperating in commas helps to identify that each command has its own role like npm is a command and 

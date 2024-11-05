@@ -74,10 +74,10 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/Mykey.pem ec2-user@${{ env.PUBLIC_IP }} "sudo yum install ansible -y"
   
-      - name: Update hosts.ini with public ip
-        run: |
-          echo "[webserver]" > ansible/hosts.ini
-          echo "{{ env.PUBLIC_IP }} ansible_ssh_user=ec2-user ansible_ssh_private_key_file=~/Mykey.pem" >> ansible/hosts.ini
+    #   - name: Update hosts.ini with public ip
+    #     run: |
+    #       echo "[webserver]" > ansible/hosts.ini
+    #       echo "{{ env.PUBLIC_IP }} ansible_ssh_user=ec2-user ansible_ssh_private_key_file=~/Mykey.pem" >> ansible/hosts.ini
 
       - name: Copy Ansible Playbook,Inventory and Docker Compose file # -o stands for ssh conf options
         run: |          

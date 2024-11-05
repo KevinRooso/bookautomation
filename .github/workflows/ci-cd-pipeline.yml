@@ -91,7 +91,7 @@ jobs:
         run: |          
           scp -o StrictHostKeyChecking=no -i ~/Mykey.pem ansible/playbook.yml ec2-user@${{ env.PUBLIC_IP }}:/home/ec2-user/playbook.yml
           scp -o StrictHostKeyChecking=no -i ~/Mykey.pem ansible/hosts.ini ec2-user@${{ env.PUBLIC_IP }}:/home/ec2-user/hosts.ini
-          scp -o StrictHostKeyChecking=no -i ~/Mykey.pem ../docker-compose.yaml ec2-user@${{ env.PUBLIC_IP }}:/home/ec2-user/docker-compose.yaml
+          scp -o StrictHostKeyChecking=no -i ~/Mykey.pem docker-compose.yaml ec2-user@${{ env.PUBLIC_IP }}:/home/ec2-user/docker-compose.yaml
 
       - name: Run Ansible Playbook
         run: |

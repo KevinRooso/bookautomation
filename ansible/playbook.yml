@@ -23,6 +23,6 @@
 
     - name: Run Docker Compose
       become: yes  # This allows the command to run as sudo
-      command: docker-compose up -d
+      command: docker-compose up -d --pull always # this will always pull the latest image from docker hub
       args:
         chdir: /home/ec2-user  # Change to the directory where docker-compose.yaml is located

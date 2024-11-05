@@ -21,11 +21,6 @@
         -o /usr/local/bin/docker-compose && 
         chmod +x /usr/local/bin/docker-compose
 
-    - name: Copy docker-compose.yaml to the server
-      copy:
-        src: ../docker-compose.yaml  # Path on local
-        dest: /home/ec2-user/docker-compose.yaml   # Destination path on the server
-
     - name: Run Docker Compose
       command: docker-compose up -d
       args:

@@ -4,19 +4,20 @@ import BookForm from './components/bookform';
 
 const App = () => {
   const [books, setBooks] = useState([]);
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
   useEffect(() => {
     fetchBooks();
   }, []);
 
   const fetchBooks = async () => {
-    const response = await fetch('http://localhost:4000/api/books');
+    const response = await fetch(`${apiUrl}/api/books`);
     const data = await response.json();
     setBooks(data);
   };
 
   const addBook = async (book) => {
-    const response = await fetch('http://localhost:4000/api/books', {
+    const response = await fetch(`${apiUrl}/api/books`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(book),
@@ -26,7 +27,7 @@ const App = () => {
   };
 
   const deleteBook = async (id) => {
-    await fetch(`http://localhost:4000/api/books/${id}`, {
+    await fetch(`${apiUrl}/api/books/${id}`, {
       method: 'DELETE',
     });
     setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));

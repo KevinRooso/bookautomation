@@ -8,9 +8,9 @@ services:
       - '4000:4000'
   bookapp:    
     image: kevinrooso/mybooksapp
-    # Running React Vite app on port 80
+    # Since vite was used 5173 port will run in container
     ports:
-      - '80:80'
+      - '5173:5173'
     # Stdin open makes the standard user input open which is good for development commands like in
     # React we might want to run npm commands 
     stdin_open: true

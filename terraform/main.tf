@@ -1,4 +1,4 @@
-# Imports all the files and dependencies required to connect to awsS
+# Imports all the files and dependencies required to connect to aws
 terraform {
   required_providers {
     aws = {
@@ -31,8 +31,8 @@ resource "aws_security_group" "allow_app_ports" {
   }
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 5173
+    to_port     = 5173
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]  # Allow React Vite app traffic
   }

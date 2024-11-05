@@ -13,13 +13,8 @@ RUN npm install
 # Copy all the files and folders from first dot (.) which is current to app directory (.) which is docker
 COPY . .
 
-# Accept the build argument for the API URL
-ARG REACT_APP_API_URL
-# Set the environment variable for the React app
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
-
 # Created React app using vite which runs on 5173 port
-EXPOSE 80
+EXPOSE 5173
 
 # When container is started from image it will run this command , 
 # seperating in commas helps to identify that each command has its own role like npm is a command and 

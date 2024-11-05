@@ -2,21 +2,21 @@
 # declarative syntax
 - name: Setup Docker and Docker Compose on EC2
   hosts: webserver # points to the hosts.ini
-  become: yes
+  become: yes # allows for sudo commands
   tasks:
     - name: Install Docker
-      yum:
+      yum: # package manager for software installation
         name: docker
-        state: present
+        state: present # ansible will check if it is already installed , if not then it installs
 
     - name: Start Docker service
       service:
         name: docker
-        state: started
-        enabled: yes
+        state: started # ansible will check if it is running or not, if not it starts it
+        enabled: yes # Enables the docker to start on boot
 
     - name: Install Docker Compose
-      shell: >
+      shell: > # Lets it run commands on shell here its installing docker with execute permission
         curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" 
         -o /usr/local/bin/docker-compose && 
         chmod +x /usr/local/bin/docker-compose

@@ -7,16 +7,16 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest   
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2 # Checks out the current repo code
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.9.8      
+      - name: Set up Terraform  
+        uses: hashicorp/setup-terraform@v1 # Official Hashicorp way to install terraform in Actions
+        with: # Allows to add parameters
+          terraform_version: 1.9.8 # Current version i used in Terraform
 
       - name: Terraform Init
         run: |
@@ -25,7 +25,7 @@ jobs:
     
       - name: Terraform Plan
         id: plan
-        env:
+        env: # Adding aws configuration for ec2 instance creation
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
@@ -39,18 +39,10 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           cd terraform
-          terraform apply -auto-approve tfplan
-          
-    #   - name: Get Instance IP
-    #     id: get_instance_ip
-    #     run: |
-    #       cd terraform
-    #       INSTANCE_IP=$(terraform output -raw instance_ip)
-    #       echo "Debug: The instance IP is: ${INSTANCE_IP}"
-    #       echo "INSTANCE_IP=${INSTANCE_IP}" >> $GITHUB_ENV
+          terraform apply -auto-approve tfplan        
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v1 # For Github actions that lets it build images
 
       - name: Build Docker Images
         run: |
@@ -58,7 +50,7 @@ jobs:
           docker build -t kevinrooso/mybooksapp ./book-frontend
 
       - name: Push Docker Images
-        run: |
+        run: | # Pushing to docker hub repo
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker push kevinrooso/mybooksapi
           docker push kevinrooso/mybooksapp
@@ -67,27 +59,27 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     env:
-      PUBLIC_IP: "54.155.66.172"  # Public IP
+      PUBLIC_IP: "34.245.121.143"  # Public IP
     
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Set up SSH for Deployment
+      - name: Set up SSH for Deployment # Key pair for ec2 instance ssh
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/Mykey.pem
           chmod 400 ~/Mykey.pem
     
-      - name: Install Ansible
+      - name: Install Ansible # StrictHostKey check removed which requires manual approval, -i for identity flag
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/Mykey.pem ec2-user@${{ env.PUBLIC_IP }} "sudo yum install ansible -y"
   
-    #   - name: Update hosts.ini with Dynamic IP
-    #     run: |
-    #       echo "[webserver]" > ansible/hosts.ini
-    #       echo "{{ env.PUBLIC_IP }} ansible_ssh_user=ec2-user" >> ansible/hosts.ini
+      - name: Update hosts.ini with public ip
+        run: |
+          echo "[webserver]" > ansible/hosts.ini
+          echo "{{ env.PUBLIC_IP }} ansible_ssh_user=ec2-user ansible_ssh_private_key_file=~/Mykey.pem" >> ansible/hosts.ini
 
-      - name: Copy Ansible Playbook,Inventory,Key and Docker Compose file
+      - name: Copy Ansible Playbook,Inventory and Docker Compose file # -o stands for ssh conf options
         run: |          
           scp -o StrictHostKeyChecking=no -i ~/Mykey.pem ansible/playbook.yml ec2-user@${{ env.PUBLIC_IP }}:/home/ec2-user/playbook.yml
           scp -o StrictHostKeyChecking=no -i ~/Mykey.pem ansible/hosts.ini ec2-user@${{ env.PUBLIC_IP }}:/home/ec2-user/hosts.ini

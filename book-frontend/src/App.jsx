@@ -4,7 +4,7 @@ import BookForm from './components/bookform';
 
 const App = () => {
   const [books, setBooks] = useState([]);
-  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
   useEffect(() => {
     fetchBooks();

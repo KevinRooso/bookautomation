@@ -1,5 +1,3 @@
-# README.md
-
 ## Simple Book Application CI/CD Pipeline
 
 ### Overview

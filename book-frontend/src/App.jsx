@@ -35,7 +35,7 @@ const App = () => {
 
   return (
     <div className="container">
-      <h1 className="mt-4">Book Collection</h1>
+      <h1 className="mt-4">Books Collection</h1>
       <BookForm addBook={addBook} />
       <BookList books={books} deleteBook={deleteBook} />
     </div>
